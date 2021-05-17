@@ -3,10 +3,10 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Example Component</div>
+                    <div class="card-header">Datos: {{ num }}</div>
 
                     <div class="card-body">
-                        I'm an example component.
+                        <button @click.prevent="sumNum()">Sumar num</button>
                     </div>
                 </div>
             </div>
@@ -18,6 +18,18 @@
     export default {
         mounted() {
             console.log('Component mounted.')
+        },
+
+        data() {
+            return {
+                num: 5,
+            }
+        },
+
+        methods: {
+            sumNum() {
+                this.num++;
+            }
         }
     }
 </script>

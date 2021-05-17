@@ -2,6 +2,13 @@
 
 @section('content')
 <div class="container">
+    @if (session('alert'))
+        <div class="alert alert-{{ session('alert')['type'] }} alert-dimissible fade show" role="alert">
+            {{ session('alert')['message'] }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </div>
+    @endif
     <table class="table table-striped">
         <thead>
             <tr>

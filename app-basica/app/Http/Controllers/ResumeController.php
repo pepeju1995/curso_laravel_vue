@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Resume;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Intervention\Image\Facades\Image;
 
 class ResumeController extends Controller
 {
@@ -43,6 +45,12 @@ class ResumeController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
+        $resume = $user->resumes()->where('title', $request->title)->first();
+        if ($resume) {
+            return back()
+                ->withErrors(['title' => 'You already have a resume with this title.'])
+                ->withInput(['title' => $request->title]);
+        }
         $resume = $user->resumes()->create([
             'title' => $request['title'],
             'name' => $user->name,
@@ -70,7 +78,7 @@ class ResumeController extends Controller
      */
     public function edit(Resume $resume)
     {
-        //
+        return view('resumes.edit', compact('resume'));
     }
 
     /**
@@ -82,7 +90,29 @@ class ResumeController extends Controller
      */
     public function update(Request $request, Resume $resume)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'website' => 'nullable|url',
+            'picture' => 'nullable|image',
+            'about' => 'nullable|String',
+            'title' => Rule::unique('resumes')
+                ->where(fn($query) => $query->where('user_id', $resume->user->id))
+                ->ignore($resume->id)
+        ]);
+
+        if (array_key_exists('picture', $data)) {
+            $picture = $data['picture']->store('pictures', 'public');
+            Image::make(public_path("storage/$picture"))->fit(800, 800);
+            $data['picture'] = $picture;
+        }
+
+        $resume->update($data);
+
+        return redirect()->route('resumes.index')->with('alert', [
+            'type' => 'success',
+            'message' => "Resume $resume->title updated successfully"
+        ]);
     }
 
     /**

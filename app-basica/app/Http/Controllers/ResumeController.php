@@ -67,7 +67,7 @@ class ResumeController extends Controller
      */
     public function show(Resume $resume)
     {
-        //
+        return view('resumes.show', compact('resume'));
     }
 
     /**
@@ -90,6 +90,7 @@ class ResumeController extends Controller
      */
     public function update(Request $request, Resume $resume)
     {
+        $this->authorize('update', $resume);
         $data = $request->validate([
             'name' => 'required|string',
             'email' => 'required|email',
@@ -103,14 +104,14 @@ class ResumeController extends Controller
 
         if (array_key_exists('picture', $data)) {
             $picture = $data['picture']->store('pictures', 'public');
-            Image::make(public_path("storage/$picture"))->fit(800, 800);
-            $data['picture'] = $picture;
+            Image::make(public_path("storage/$picture"))->fit(800, 800)->save();
+            $data['picture'] = "/storage/$picture";
         }
 
         $resume->update($data);
 
         return redirect()->route('resumes.index')->with('alert', [
-            'type' => 'success',
+            'type' => 'primary',
             'message' => "Resume $resume->title updated successfully"
         ]);
     }
@@ -123,6 +124,12 @@ class ResumeController extends Controller
      */
     public function destroy(Resume $resume)
     {
-        //
+        $this->authorize('delete', $resume->id);
+        $resume->delete();
+
+        return redirect()->route('resumes.index')->with('alert', [
+            'type' => 'danger',
+            'message' => "Resume $resume->title deleted successfully"
+        ]);
     }
 }

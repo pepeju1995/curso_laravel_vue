@@ -97,11 +97,12 @@ class ResumeController extends Controller
             'website' => 'nullable|url',
             'picture' => 'nullable|image',
             'about' => 'nullable|String',
+            'skills' => 'nullable|array',
             'title' => Rule::unique('resumes')
                 ->where(fn($query) => $query->where('user_id', $resume->user->id))
                 ->ignore($resume->id)
         ]);
-
+        
         if (array_key_exists('picture', $data)) {
             $picture = $data['picture']->store('pictures', 'public');
             Image::make(public_path("storage/$picture"))->fit(800, 800)->save();
@@ -111,7 +112,7 @@ class ResumeController extends Controller
         $resume->update($data);
 
         return redirect()->route('resumes.index')->with('alert', [
-            'type' => 'primary',
+            'type' => 'success',
             'message' => "Resume $resume->title updated successfully"
         ]);
     }

@@ -4,7 +4,7 @@
 <div class="container">
     <div class="d-inline-flex">
         <div>
-            <img style="width: 120px;" src="{{ $resume->picture }}">
+            <img src="{{ $resume->picture }}" style="width: 120px;">
         </div>
         <div class="ml-4">
             <div>

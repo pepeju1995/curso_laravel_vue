@@ -22,7 +22,8 @@ class CreateResumesTable extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('website')->nullable();
-            $table->string('picture')->default("/storage/pictures/default.png");
+            $table->string('picture')->default('/storage/pictures/default.png');
+            $table->json('skills')->nullable();
             $table->text('about')->nullable();
         });
     }
